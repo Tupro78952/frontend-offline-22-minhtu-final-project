@@ -1,0 +1,6 @@
+clone
+commit -> ghi lại lịch sử project
+- Thêm những file cần commit qua vùng Staged
+push -> câp nhật sự thay đổi dươi local lên serverr(github)
+discard -> hủy sựu thay đổi của những file đã thực hiện
+checkout -> quay lại những commit đã làm

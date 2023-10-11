@@ -1,254 +1,389 @@
-const elArticlesTreding = document.getElementById('articlesTrending');
-const elArticlesNew = document.getElementById('articlesNew');
-const elArticleNewLarge = document.getElementById('articleNewLarge');
-const elCategoriesFeaturedWithArticles = document.getElementById('categoriesFeaturedWithArticles');
-const elCategoriesFeaturedTab = document.getElementById('categoriesFeaturedTab');
-const elCategoriesFeaturedTabContent = document.getElementById('categoriesFeaturedTabContent');
-const elArticlesSlider = document.getElementById('articlesSlider');
-
-// RENDER ARTICLES SLIDER
-API.get('articles/popular?limit=4').then((res) => {
-  const articles = res.data.data;
-
-  let html = '';
-  articles.forEach((item) => {
-    html += /* html */ `
-    <div class="swiper-slide">
-      <a
-        href="detail.html?id=${item.id}"
-        class="img-bg d-flex align-items-end"
-        style="background-image: url('${item.thumb}')"
-      >
-        <div class="img-bg-inner">
-          <h2>${item.title}</h2>
-          <p>${item.description}</p>
-        </div>
-      </a>
-    </div>`;
-  });
-  elArticlesSlider.innerHTML = html;
+const API = axios.create({
+  baseURL: "https://apiforlearning.zendvn.com/api/v2/",
 });
 
-// RENDER ARTICLES TRENDING
+dayjs.extend(window.dayjs_plugin_relativeTime);
+dayjs.locale("vi");
+
+const elMenu = document.getElementById("mainMenu");
+const elArticlesTopStory = document.getElementById("articlesTopStory");
+const elEchoHeroBaner = document.getElementById("EchoHeroBaner");
+const elLatestNews = document.getElementById("articlesLatestNews");
+const elArticlesTrending = document.getElementById("articlesTrending");
+const elArticlesTrendingLarge = document.getElementById("articlesTrendingLarge");
+const elDiscoverCategories = document.getElementById("discoverCategories");
+const elFeaturedPostTop = document.getElementById("FeaturedPostTop");
+const elFeaturedPostMid = document.getElementById("FeaturedPostMid");
+const elFeaturedPostBot = document.getElementById("FeaturedPostBot");
+const elArticlesPopularWeek = document.getElementById("articlesPopularWeek");
+const elNewPodcasts = document.getElementById("NewPodcasts");
+const elArticleVideo = document.getElementById("articleVideo");
+const elArticleVideoTopic = document.getElementById("articleVideoTopic");
+
+//RENDER MENUS
+
+API.get(`categories_news`).then((response) => {
+  const data = response.data;
+  const categories = data.data;
+
+  let htmlMenu = '';
+  let htmlMenuOther = '';
+  categories.forEach((item, index) => {
+    
+    if (index < 3) {
+      htmlMenu += `
+      <li class="menu-item">
+      <a href="category-style-2.html?id=${item.id}" class="echo-dropdown-main-element active">${item.name}</a>
+      </li>`
+    }else{
+      htmlMenuOther +=  `
+      <li class="nav-item">
+      <a href="category-style-2.html?id=${item.id}">${item.name}</a>
+      </li>`
+    }
+    
+  });
+
+  elMenu.innerHTML =  `
+    ${htmlMenu}
+    <li class="menu-item echo-has-dropdown" >
+      <a href="#" class="echo-dropdown-main-element">Danh mục khác</a>
+      <ul class="echo-submenu list-unstyled menu-pages">
+        ${htmlMenuOther}
+      </ul>
+    </li>`;
+});
+
+//Echo hero baner
+
+API.get(`articles?limit=5&page=15`).then((response) => {
+  const articles = response.data.data;
+ 
+  let htmlBaner = '';
+  let htmlTopStory = '';
+  let htmlTopic = '';
+
+  articles.forEach((item, index) => {
+   if(index === 0) {
+    htmlBaner += `
+    <div class="echo-hero-banner-main-img img-transition-scale">
+            <a href="post-details.html?id=${item.id}"><img class="banner-image-one img-hover"
+                src="${item.thumb}"
+                alt="${item.title}"/></a>
+          </div>
+          <h1 class="echo-hero-title text-capitalize font-weight-bold">
+            <a href="post-details.html?id=${item.id}" class="title-hover">${item.title}</a>
+          </h1>
+          <hr />
+          <p class="echo-hero-discription">
+            ${item.description}
+          </p>
+          <div class="echo-hero-area-titlepost-post-like-comment-share">
+            <div class="echo-hero-area-like-read-comment-share">
+              <a href="post-details.html?id=${item.id}"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+            </div>
+            <div class="echo-hero-area-like-read-comment-share">
+              <a href="post-details.html?id=${item.id}"><i class="fa-light fa-eye"></i> 3.5k Views</a>
+            </div>
+            <div class="echo-hero-area-like-read-comment-share">
+              <a href="post-details.html?id=${item.id}"><i class="fa-light fa-comment-dots"></i> 05 Comment</a>
+            </div>
+            <div class="echo-hero-area-like-read-comment-share">
+              <a href="post-details.html?id=${item.id}"><i class="fa-light fa-arrow-up-from-bracket"></i> 1.5k Share</a>
+            </div>
+          </div>`;
+   }else if (index === 1) {
+    htmlTopStory += `
+    <div class="echo-top-story first">
+      <div class="echo-story-picture img-transition-scale">
+        <a href="post-details.html?id=${item.id}"><img src="${item.thumb}" alt="${item.title}" class="img-hover"></a>
+      </div>
+      </div>
+      <div class="echo-story-text">
+        <h4>
+          <a href="post-details.html?id=${item.id}" class="title-hover">${item.title}</a>
+         </h4>
+        <div class="echo-trending-post-bottom-icons">
+          <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+          <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-eye"></i> 3.5k Views</a>
+        </div>
+      </div>
+    </div>`;
+   }else{
+    htmlTopic += `
+    <div class="echo-top-story">
+      <div class="echo-story-picture img-transition-scale">
+        <a href="post-details.html?id=${item.id}"><img src="${item.thumb}" alt="${item.title}" class="img-hover"></a>
+      </div>
+      <div class="echo-story-text">
+        <h4>
+          <a href="post-details.html?id=${item.id}" class="title-hover"><p class="story-edit-small title-hover">${item.title}</p></a>
+        </h4>
+        <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+      </div>
+    </div>`;
+   }
+  });
+  elEchoHeroBaner.innerHTML = htmlBaner;
+  elArticlesTopStory.innerHTML = htmlTopStory + htmlTopic;
+});
+
+// LATEST NEWS
+
+API.get(`categories_news/2/articles?limit=8&page=10`).then((response) => {
+  const articles = response.data.data;
+  
+  let htmlLatest = '';
+  articles.forEach((item) => {
+    htmlLatest += `
+    <div class="swiper-slide">
+      <div class="echo-latest-news-main-content">
+        <div class="echo-latest-news-img img-transition-scale">
+          <a href="post-details.html?id=${item.id}">
+          <img src="${item.thumb}" alt="${item.title}" class="img-hover">
+          </a>
+        </div>
+        <div class="echo-latest-news-single-title">
+          <h5><a href="post-details.html?id=${item.id}" class="text-capitalize title-hover">${item.title}</a></h5>
+        </div>
+        <div class="echo-latest-news-time-views">
+          <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+          
+        </div>
+      </div>
+    </div>`;
+  });
+  elLatestNews.innerHTML = htmlLatest;
+});
+
+
+//TRENDING
+
 API.get(`articles/popular?limit=5`).then((response) => {
   const articles = response.data.data;
-  let html = '';
-  articles.forEach((item, index) => {
-    html += renderArticleTrendingItem(item, index);
-  });
-
-  elArticlesTreding.innerHTML = html;
-});
-
-// RENDER ARTICLES NEW
-API.get('articles?limit=5').then((res) => {
-  const articles = res.data.data;
+  
 
   let html = '';
-  articles.forEach((item, index) => {
-    if (index === 0) {
-      elArticleNewLarge.innerHTML = renderArticleNewLargeItem(item);
-    } else {
-      html += renderArticleNewItem(item);
-    }
-  });
-
-  elArticlesNew.innerHTML = html;
-});
-
-// RENDER CATEGORY FEATURED WITH ARTICLES
-API.get('categories_news/articles?limit_cate=2&limit=9').then((res) => {
-  const data = res.data.data;
-
-  let html = '';
-  data.forEach((item, index) => {
-    const categoryName = item.name;
-    const articles = item.articles;
-
-    html += /* html */ `
-    <section class="category-section">
-      <div class="container" data-aos="fade-up">
-        ${renderCategorySectionTitle(categoryName)}
-        ${renderArticlesByCategoryFeatured(articles, index)}
-      </div>
-    </section>`;
-  });
-
-  elCategoriesFeaturedWithArticles.innerHTML = html;
-});
-
-// RENDER CATEGORY FEATURED WITH ARTICLES LAYOUT TAB
-API.get('categories_news/articles?limit_cate=4&limit=4').then((res) => {
-  const data = res.data.data;
-
-  let htmlTab = '';
-  let htmlTabContent = '';
-
-  data.forEach((item, index) => {
-    const categoryName = item.name;
-    const articles = item.articles;
-    const slug = item.slug;
-    const active = index === 0 ? 'active' : '';
-    const activeShow = index === 0 ? 'show active' : '';
-
-    let htmlArticles = '';
-
-    articles.forEach((articleItem) => {
-      htmlArticles += /* html */ `
-      <div class="col-md-6 col-lg-3">
-        <div class="post-entry-1">
-          <a href="detail.html?id=${articleItem.id}"
-            ><img src="${articleItem.thumb}" alt="${articleItem.title}" class="img-fluid"
-          /></a>
-          <div class="post-meta">
-            <span>${articleItem.publish_date}</span>
-          </div>
-          <h2><a href="detail.html?id=${articleItem.id}">${articleItem.title}</a></h2>
+  articles.forEach(item => {
+    html += `
+    <div class="echo-trending-left-site-post">
+      <div class="echo-trending-left-site-post-img img-transition-scale">
+        <a href="post-details.html?id=${item.id}">
+          <img src="${item.thumb}" alt="${item.title}" class="img-hover">
+        </a>
+     </div>
+     <div class="echo-trending-right-site-post-title">
+        <h5><a href="post-details.html?id=${item.id}" class="text-capitalize title-hover">${item.title}</a></h5>
+        <div class="echo-trending-post-bottom-icons">
+            <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+            <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-eye"></i> 3.5k Views</a>
         </div>
-      </div>`;
-    });
+    </div>
+</div>`;
+  });
+  elArticlesTrending.innerHTML = html;
+});
 
-    htmlTab += /* html */ `
-    <li class="nav-item" role="presentation">
-      <button
-        class="nav-link ${active}"
-        id="${slug}-tab"
-        data-bs-toggle="tab"
-        data-bs-target="#${slug}-tab-pane"
-        type="button"
-        role="tab"
-        aria-controls="${slug}-tab-pane"
-        aria-selected="false"
-      >
-        ${categoryName}
-      </button>
-    </li>`;
+API.get(`articles/popular?limit=2`).then((response) => {
+  const articles = response.data.data;
 
-    htmlTabContent += /* html */ `
-    <div class="tab-pane fade ${activeShow}" id="${slug}-tab-pane" role="tabpanel" aria-labelledby="${slug}-tab" tabindex="0">
-      <div class="row g-5">${htmlArticles}</div>
+  let html = '';
+  articles.forEach(item => {
+    html += `<div class="echo-trending-right-site-post">
+    <div class="echo-trending-right-site-post-img img-transition-scale">
+        <a href="post-details.html?id=${item.id}">
+            <img src="${item.thumb}" alt="${item.title}" class="img-hover">
+        </a>
+    </div>
+    <div class="echo-trending-right-site-post-title">
+        <h4 class="text-capitalize"><a href="post-details.html?id=${item.id}" class="title-hover">${item.title}</a></h4>
+    </div>
+    <div class="echo-trending-right-site-like-comment-share-icons">
+        <div class="echo-trending-right-like-comment-content">
+          <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+        </div>
+        <div class="echo-trending-right-like-comment-content">
+          <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-eye"></i> 3.5k Views</a>
+        </div>
+        
+    </div>
+</div>`;
+  });
+  elArticlesTrendingLarge.innerHTML = html;
+});
+
+
+
+
+//FEATURED POST
+API.get(`articles?limit=2&limit_case=8&page=7`).then((response) => {
+  const data = response.data.data;
+  console.log(data);
+  let html = '';
+
+  data.forEach((item) => {
+   
+      html += `
+    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+      <div class="echo-feature-area-post">
+          <div class="echo-feature-area-post-img img-transition-scale">
+              <a href="post-details.html?id=${item.id}">
+                  <img src="${item.thumb}" alt="${item.title}" class="img-hover">
+              </a>
+          </div>
+          <div class="echo-feature-area-post-hins">
+               <h5 class="text-capitalize"><a href="post-details.html?id=${item.id}" class="title-hover">${item.title}</a></h5>
+           </div>
+           <hr>
+          <div class="echo-feature-area-read-view">
+               <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+               <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-eye"></i> 3.5k Views</a>
+          </div>
+       </div>
+  </div>`;
+    
+
+    
+  });
+  elFeaturedPostTop.innerHTML = html;
+});
+
+API.get(`articles/popular?limit=4&limit_case=8`).then(response => {
+  const data = response.data.data;
+
+  let html ='';
+  data.forEach((item, index) => {
+    html += `
+    <div class="col-xl-6 col-lg-6 col-md-6">
+      <div class="echo-feature-area-option-content">
+          <div class="echo-feature-area-option-number">
+              <h3>0${index + 1}</h3>
+          </div>
+          <div class="echo-feature-area-option-content-text">
+              <h5 class="text-capitalize"><a href="post-details.html?id=${item.id}" class="title-hover">${item.title}</a>
+              </h5>
+              <div class="echo-feature-area-option-read-more">
+                  <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+              </div>
+          </div>
+      </div>
+  </div>`;
+  });
+  elFeaturedPostMid.innerHTML = html;
+});
+
+API.get(`articles/popular?limit=2&limit_case=8`).then(response => {
+  const data = response.data.data;
+
+  let html = '';
+  data.forEach(item => {
+    html += `
+    <div class="col-xl-12">
+    <div class="echo-feature-area-last-content">
+        <div class="echo-feature-area-last-content-img img-transition-scale">
+            <a href="post-details.html?id=${item.id}"> <img src="${item.thumb}" alt="${item.title}" class="img-hover"></a>
+        </div>
+        <div class="echo-feature-area-last-content-text">
+            <h3 class="text-capitalize"><a href="post-details.html?id=${item.id}" class="title-hover">${item.title}</a></h3>
+            <div class="echo-feature-area-last-content-read-view">
+                <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i>${dayjs(item.publish_date).fromNow()} </a>
+                <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-eye"></i> 3.5k
+                    Views</a>
+            </div>
+        </div>
+    </div>
+</div>`;
+  });
+  elFeaturedPostBot.innerHTML = html;
+});
+
+//POPULAR OF WEEKS
+
+API.get(`articles/popular?limit=3`).then((response) => {
+  const data = response.data.data;
+
+  let html = '';
+  data.forEach(item => {
+    html += `
+    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+    <div class="echo-popular-area-single-item">
+        <div class="echo-popular-area-img img-transition-scale">
+            <a href="post-details.html?id=${item.id}"><img src="${item.thumb}" alt="${item.title}" class="img-hover"></a>
+         </div>
+         <div class="echo-popular-area-item-title">
+            <h5 class="text-center text-capitalize"><a href="post-details.html?id=${item.id}" class="title-hover">${item.title}</a></h5>
+        </div>
+         <div class="echo-popular-area-read-view text-center">
+             <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+             <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-eye"></i> 3.5k Views</a>
+         </div>
+     </div>
+ </div>`;
+  });
+  elArticlesPopularWeek.innerHTML = html;
+});
+
+
+//NEW PODCASTS
+
+API.get(`articles/popular?limit=4&limit_case=4`).then((response) => {
+  const data = response.data.data;
+  console.log(data);
+  let html = '';
+
+  data.forEach(item => {
+    html += `
+    <div class="echo-audio-news-home-1-flexing">
+      <div class="echo-feature-area-right-site-audio-news">
+           <div class="echo-feature-area-right-img">
+              <a href="post-details.html?id=${item.id}"><img src="${item.thumb}" alt="${item.title}"></a>
+          </div>
+           <div class="echo-feature-area-right-audio-text">
+                <h5 class="text-capitalize"><a href="post-details.html?id=${item.id}" class="title-hover">${item.title}</a></h5>
+           </div>
+      </div>
+      <hr>`;
+  });
+  elNewPodcasts.innerHTML = html;
+});
+
+//videos//categories_news/2/articles?limit=4&page=5
+
+API.get(`categories_news/2/articles?limit=3&page=5`).then((response) => {
+  const data = response.data.data;
+  console.log(data);
+  let htmlVideo = '';
+  let htmlVideoTopics = '';
+  data.forEach((item, index) => {
+    if(index === 0) {
+      htmlVideo += `
+      <div class="echo-video-left-site">
+        <a href="post-details.html?id=${item.id}"><img src="${item.thumb}" alt="${item.title}"></a>
+         <div class="echo-video-left-site-text-box">
+              <h5><a href="post-details.html?id=${item.id}" class="title-hover">${item.title}</a></h5>
+            <hr>
+            <div class="echo-video-left-site-read-views">
+                 <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+                <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-eye"></i> 3.5k Views</a>
+            </div>
+        </div>
     </div>`;
-  });
-
-  elCategoriesFeaturedTab.innerHTML = htmlTab;
-  elCategoriesFeaturedTabContent.innerHTML = htmlTabContent;
-});
-
-function renderCategorySectionTitle(categoryName) {
-  return /* html */ `
-  <div class="section-header d-flex justify-content-between align-items-center mb-5">
-    <h2>${categoryName}</h2>
-    <div><a href="#" class="more">See All ${categoryName}</a></div>
-  </div>`;
-}
-
-function renderArticlesByCategoryFeatured(articles, idx) {
-  let htmlArticlesLeft = '';
-  let htmlArticlesRight = '';
-
-  articles.forEach((articleItem, index) => {
-    const title = articleItem.title;
-    const thumb = articleItem.thumb;
-    const publishDate = articleItem.publish_date;
-    const authorName = articleItem.author;
-
-    if (index < 4) {
-      htmlArticlesLeft += /* html */ `
-      <div class="col-lg-6">
-        <div class="post-entry-1">
-          <a href="detail.html?id=${articleItem.id}"
-            ><img src="${thumb}" alt="${title}" class="img-fluid"
-          /></a>
-          <div class="post-meta">
-            <span>${publishDate}</span>
-          </div>
-          <h2><a href="detail.html?id=${articleItem.id}">${title}</a></h2>
+    }else  {
+      htmlVideoTopics += `
+      <div class="echo-video-right-site-content">
+        <div class="echo-video-right-site-content-text">
+            <h5 class="text-capitalize"><a href="post-details.html?id=${item.id}" class="title-hover text-white">${item.title}</a>
+            </h5>
+            <hr>
+            <a href="post-details.html?id=${item.id}" class="pe-none text-white"><i class="fa-light fa-clock"></i> ${dayjs(item.publish_date).fromNow()}</a>
+            <a href="post-details.html?id=${item.id}" class="pe-none"><i class="fa-light fa-eye"></i> 3.5k Views</a></a>
         </div>
-      </div>`;
-    } else {
-      htmlArticlesRight += /* html */ `
-      <div class="post-entry-1 border-bottom">
-        <div class="post-meta">
-          <span>${publishDate}</span>
+        <div class="echo-video-right-site-content-video">
+            <a href="post-details.html?id=${item.id}"><img src="${item.thumb}" alt="${item.title}"></a>
         </div>
-        <h2 class="mb-2">
-          <a href="detail.html?id=${articleItem.id}">${title}</a>
-        </h2>
-        <span class="author mb-3 d-block">${authorName}</span>
-      </div>`;
+    </div>`;
     }
-  });
-
-  let rowClass = 'flex-row-reverse';
-  let borderClass = '';
-
-  if (idx % 2 === 0) {
-    rowClass = '';
-    borderClass = 'border-start custom-border';
-  }
-
-  // const rowClass = idx % 2 === 0 ? '' : 'flex-row-reverse';
-  // const borderClass = idx % 2 === 0 ? 'border-start custom-border' : '';
-
-  return /* html */ `
-  <div class="row g-5 ${rowClass}">
-    <div class="col-lg-8">
-      <div class="row g-5">
-        ${htmlArticlesLeft}
-      </div>
-    </div>
-    <div class="col-lg-4 ${borderClass}">
-      ${htmlArticlesRight}
-    </div>
-  </div>`;
-}
-
-function renderArticleTrendingItem(item, index) {
-  return /* html */ `
-  <li>
-    <a href="detail.html?id=${item.id}#">
-      <span class="number">${index + 1}</span>
-      <h3>${item.title}</h3>
-      <span class="author">${item.author}</span>
-    </a>
-  </li>`;
-}
-
-function renderArticleNewLargeItem(item) {
-  const publishDate = dayjs(item.publish_date).fromNow();
-  return /* html */ `
-  <div class="post-entry-1 lg">
-    <a href="detail.html?id=${item.id}"><img src="${item.thumb}" alt="${item.title}" class="img-fluid" /></a>
-    <div class="post-meta">
-      <span class="date">${item.category.name}</span> 
-      <span class="mx-1">&bullet;</span> 
-      <span>${publishDate}</span>
-    </div>
-    <h2><a href="detail.html?id=${item.id}">${item.title}</a></h2>
-    <p class="mb-4 d-block">${item.description}</p>
-
-    <div class="d-flex align-items-center author">
-      <div class="photo"><img src="assets/img/person-1.jpg" alt="" class="img-fluid" /></div>
-      <div class="name">
-        <h3 class="m-0 p-0">${item.author}</h3>
-      </div>
-    </div>
-  </div>`;
-}
-
-function renderArticleNewItem(item) {
-  return /* html */ `
-  <div class="col-lg-6">
-    <div class="post-entry-1">
-      <a href="detail.html?id=${item.id}">
-        <img src="${item.thumb}" alt="${item.title}" class="img-fluid"/>
-      </a>
-      <div class="post-meta">
-        <span class="date">${item.category.name}</span> 
-        <span class="mx-1">&bullet;</span> 
-        <span>${item.publish_date}</span>
-      </div>
-      <h2><a href="detail.html?id=${item.id}">${item.title}</a></h2>
-    </div>
-  </div>`;
-}
+  })
+  elArticleVideo.innerHTML = htmlVideo;
+  elArticleVideoTopic.innerHTML = htmlVideoTopics;
+})
